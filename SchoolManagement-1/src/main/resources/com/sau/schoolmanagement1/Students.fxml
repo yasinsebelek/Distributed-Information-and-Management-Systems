@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.sau.schoolmanagement1.controller.StudentsController"
+        prefHeight="211.0" prefWidth="388.0">
+    <children>
+        <Label layoutX="26.0" layoutY="20.0" text="ID:" />
+        <Label layoutX="26.0" layoutY="50.0" text="NAME:" />
+        <Label layoutX="15.0" layoutY="81.0" text="DEPARTMENT:" />
+        <TextField fx:id="studentId" layoutX="111.0" layoutY="16.0" />
+        <TextField fx:id="studentName" layoutX="111.0" layoutY="46.0" />
+        <TextField fx:id="studentDepartment" layoutX="111.0" layoutY="76.0" />
+        <Button fx:id="getStudent" layoutX="287.0" layoutY="16.0" mnemonicParsing="false" onAction="#getStudent" prefHeight="24.0" prefWidth="56.0" text="GET" />
+        <Button fx:id="updateStudent" layoutX="111.0" layoutY="151.0" mnemonicParsing="false" onAction="#updateStudent" prefHeight="24.0" prefWidth="66.0" text="UPDATE" />
+        <Button fx:id="saveStudent" layoutX="35.0" layoutY="151.0" mnemonicParsing="false" onAction="#saveStudent" prefHeight="24.0" prefWidth="56.0" text="SAVE" />
+        <Button fx:id="deleteStudent" layoutX="200.0" layoutY="151.0" mnemonicParsing="false" onAction="#deleteStudent" prefHeight="24.0" prefWidth="66.0" text="DELETE" />
+        <Button fx:id="close" layoutX="287.0" layoutY="150.0" mnemonicParsing="false" onAction="#close" text="CLOSE" />
+        <Button fx:id="clearStudent" layoutX="287.0" layoutY="76.0" mnemonicParsing="false" onAction="#clearStudent" prefHeight="24.0" prefWidth="56.0" text="CLEAR" />
+    </children>
+
+
+</AnchorPane>

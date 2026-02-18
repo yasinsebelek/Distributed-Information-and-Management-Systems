@@ -42,22 +42,19 @@ public class StudentsController {
     private Button clearStudent;
 
 
-
-
     @FXML
-    void getStudent (ActionEvent event) {
+    void getStudent(ActionEvent event) {
         checkId(studentId.getText(), event);
         StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
         int id = Integer.parseInt(studentId.getText());
         Optional<Students> students = studentCrudOperations.getStudentsById(id);
 
-        if(students.isPresent()){
+        if (students.isPresent()) {
 
             studentId.setText(Integer.toString(students.get().getId()));
             studentName.setText(students.get().getName());
             studentDepartment.setText(students.get().getDepartment());
-        }
-        else {
+        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("EROR");
             alert.setHeaderText("Student with " + id + " not found");
@@ -66,7 +63,7 @@ public class StudentsController {
     }
 
     @FXML
-    void updateStudent (ActionEvent event) {
+    void updateStudent(ActionEvent event) {
         checkId(studentId.getText(), event);
         Students students = new Students();
         students.setName(studentName.getText());
@@ -74,7 +71,7 @@ public class StudentsController {
         students.setId(Integer.parseInt(studentId.getText()));
         StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
         int res = studentCrudOperations.updateStudents(students);
-        if(res > 0){
+        if (res > 0) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
             alert.setHeaderText("Student with id " + studentId.getText() + " id updated");
@@ -89,7 +86,7 @@ public class StudentsController {
     }
 
     @FXML
-    void saveStudent (ActionEvent event) {
+    void saveStudent(ActionEvent event) {
         checkId(studentId.getText(), event);
         Students students = new Students();
         students.setName(studentName.getText());
@@ -97,12 +94,12 @@ public class StudentsController {
         students.setId(Integer.parseInt(studentId.getText()));
         StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
         int res = studentCrudOperations.insertStudents(students);
-        if(res > 0){
+        if (res > 0) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
             alert.setHeaderText("Student with id " + studentId.getText() + " saved");
             alert.showAndWait();
-        } else if(res == -1){
+        } else if (res == -1) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("There is another student with id: " + studentId.getText());
@@ -116,7 +113,7 @@ public class StudentsController {
     }
 
     @FXML
-    void deleteStudent (ActionEvent event) {
+    void deleteStudent(ActionEvent event) {
         checkId(studentId.getText(), event);
         StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
         int id = Integer.parseInt(studentId.getText());
@@ -134,12 +131,37 @@ public class StudentsController {
     }
 
     @FXML
-    void clearStudent (ActionEvent event) {
+    void clearStudent(ActionEvent event) {
         studentId.setText("");
         studentName.setText("");
         studentDepartment.setText("");
     }
-    public void checkId (String id, ActionEvent event){
 
+    public void checkId(String id, ActionEvent event) {
+        if (id == null || id.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Id cannot be empty!");
+            alert.showAndWait();
+            clearStudent(event);
+            return;
+        }
+
+        try {
+            int value = Integer.parseInt(id);
+            if (value <= 0) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Id must be a positive number!");
+                alert.showAndWait();
+                clearStudent(event);
+            }
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Id must be a valid number!");
+            alert.showAndWait();
+            clearStudent(event);
+        }
     }
 }

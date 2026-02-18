@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.sau.schoolmanagement1.controller.CoursesController"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane
+        xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.sau.schoolmanagement1.controller.CoursesController"
+        prefHeight="240.0" prefWidth="400.0" >
+    <children>
+        <Label layoutX="26.0" layoutY="20.0" text="ID:" />
+        <Label layoutX="26.0" layoutY="50.0" text="TITLE:" />
+        <Label layoutX="15.0" layoutY="81.0" text="DESCRIPTION:" />
+        <Label layoutX="26.0" layoutY="111.0" text="SEMESTER:" />
 
+        <TextField fx:id="courseId" layoutX="111.0" layoutY="16.0" />
+        <TextField fx:id="courseTitle" layoutX="111.0" layoutY="46.0" />
+        <TextField fx:id="courseDescription" layoutX="111.0" layoutY="76.0" />
+        <TextField fx:id="courseSemester" layoutX="111.0" layoutY="106.0" />
 
-
+        <Button fx:id="getCourse" layoutX="287.0" layoutY="16.0" mnemonicParsing="false" onAction="#getCourse" text="GET" />
+        <Button fx:id="updateCourse" layoutX="111.0" layoutY="160.0" mnemonicParsing="false" onAction="#updateCourse" text="UPDATE" />
+        <Button fx:id="saveCourse" layoutX="35.0" layoutY="160.0" mnemonicParsing="false" onAction="#saveCourse" text="SAVE" />
+        <Button fx:id="deleteCourse" layoutX="200.0" layoutY="160.0" mnemonicParsing="false" onAction="#deleteCourse" text="DELETE" />
+        <Button fx:id="close" layoutX="287.0" layoutY="160.0" mnemonicParsing="false" onAction="#close" text="CLOSE" />
+        <Button fx:id="clearCourse" layoutX="287.0" layoutY="107.0" mnemonicParsing="false" onAction="#clearCourse" prefHeight="24.0" prefWidth="56.0" text="CLEAR" />
+    </children>
 </AnchorPane>

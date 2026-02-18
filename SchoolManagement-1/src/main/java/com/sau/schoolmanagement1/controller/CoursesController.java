@@ -1,131 +1,119 @@
 package com.sau.schoolmanagement1.controller;
 
+import com.sau.schoolmanagement1.db.CoursesCrudOperations;
 import com.sau.schoolmanagement1.dto.Courses;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
-import com.sau.schoolmanagement1.db.CoursesCrudOperations;
 
 import java.util.Optional;
 
 public class CoursesController {
-    @FXML
-    private TextField courseId;
-    @FXML
-    private TextField courseTitle;
-    @FXML
-    private TextField courseDescription;
-    @FXML
-    private TextField courseSemester;
 
-    @FXML
-    private Button getCourse;
-    @FXML
-    private Button saveCourse;
-    @FXML
-    private Button updateCourse;
-    @FXML
-    private Button deleteCourse;
-    @FXML
-    private Button clearCourse;
-    @FXML
-    private Button close;
+    @FXML private TextField courseId;
+    @FXML private TextField courseTitle;
+    @FXML private TextField courseDescription;
+    @FXML private TextField courseSemester;
+
+    @FXML private Button getCourse;
+    @FXML private Button saveCourse;
+    @FXML private Button updateCourse;
+    @FXML private Button deleteCourse;
+    @FXML private Button clearCourse;
+    @FXML private Button close;
+
+    private final CoursesCrudOperations coursesCrudOperations = new CoursesCrudOperations();
 
     @FXML
     void getCourse(ActionEvent event) {
-        checkId(courseId.getText(), event);
-        CoursesCrudOperations coursesCrudOperations = new CoursesCrudOperations();
-        int id = Integer.parseInt(courseId.getText());
-        Optional<Courses> course = coursesCrudOperations.getCourseById(id);
+        if (!checkId(courseId.getText(), event)) return;
 
-        if (course.isPresent()) {
-            courseId.setText(Integer.toString(course.get().getId()));
-            courseTitle.setText(course.get().getTitle());
-            courseDescription.setText(course.get().getDescription());
-            courseSemester.setText(course.get().getSemester());
+        int id = Integer.parseInt(courseId.getText().trim());
+        Optional<Courses> courseOpt = coursesCrudOperations.getCourseById(id);
+
+        if (courseOpt.isPresent()) {
+            Courses c = courseOpt.get();
+            courseId.setText(Integer.toString(c.getId()));
+            courseTitle.setText(c.getTitle() == null ? "" : c.getTitle());
+            courseDescription.setText(c.getDescription() == null ? "" : c.getDescription());
+            courseSemester.setText(c.getSemester() == null ? "" : c.getSemester());
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR");
-            alert.setHeaderText("Course with ID " + id + " not found");
-            alert.showAndWait();
+            showError("Course with ID " + id + " not found");
         }
     }
 
     @FXML
     void updateCourse(ActionEvent event) {
-        checkId(courseId.getText(), event); // ID kontrolü
+        if (!checkId(courseId.getText(), event)) return;
+        if (!checkCourseFields()) return;
 
         Courses course = new Courses();
-        course.setId(Integer.parseInt(courseId.getText()));
-        course.setTitle(courseTitle.getText());
-        course.setDescription(courseDescription.getText());
-        course.setSemester(courseSemester.getText());
+        course.setId(Integer.parseInt(courseId.getText().trim()));
+        course.setTitle(courseTitle.getText().trim());
+        course.setDescription(courseDescription.getText().trim());
+        course.setSemester(courseSemester.getText().trim());
 
-        CoursesCrudOperations coursesCrudOperations = new CoursesCrudOperations();
-        int res = coursesCrudOperations.updateCourse(course); // DB update işlemi
+        int res = coursesCrudOperations.updateCourse(course);
 
         if (res > 0) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText("Course with ID " + courseId.getText() + " updated successfully");
-            alert.showAndWait();
+            showInfo("Course with ID " + courseId.getText().trim() + " updated successfully");
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Error updating course!");
-            alert.showAndWait();
+            showError("Error updating course!");
         }
     }
 
     @FXML
     void saveCourse(ActionEvent event) {
-        checkId(courseId.getText(), event); // ID kontrolü
+        if (!checkId(courseId.getText(), event)) return;
+        if (!checkCourseFields()) return;
 
         Courses course = new Courses();
-        course.setId(Integer.parseInt(courseId.getText()));
-        course.setTitle(courseTitle.getText());
-        course.setDescription(courseDescription.getText());
-        course.setSemester(courseSemester.getText());
+        course.setId(Integer.parseInt(courseId.getText().trim()));
+        course.setTitle(courseTitle.getText().trim());
+        course.setDescription(courseDescription.getText().trim());
+        course.setSemester(courseSemester.getText().trim());
 
-        CoursesCrudOperations coursesCrudOperations = new CoursesCrudOperations();
-        int res = coursesCrudOperations.insertCourse(course); // DB insert işlemi
+        int res = coursesCrudOperations.insertCourse(course);
 
         if (res > 0) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText("Course with ID " + courseId.getText() + " saved successfully");
-            alert.showAndWait();
+            showInfo("Course with ID " + courseId.getText().trim() + " saved successfully");
         } else if (res == -1) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("There is another course with ID: " + courseId.getText());
-            alert.showAndWait();
+            showError("There is another course with ID: " + courseId.getText().trim());
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Error saving course!");
-            alert.showAndWait();
+            showError("Error saving course!");
         }
     }
 
-
     @FXML
     void deleteCourse(ActionEvent event) {
-        checkId(courseId.getText(), event); // ID kontrolü
+        if (!checkId(courseId.getText(), event)) return;
 
-        CoursesCrudOperations coursesCrudOperations = new CoursesCrudOperations();
-        int id = Integer.parseInt(courseId.getText());
-        int result = coursesCrudOperations.deleteCourseById(id); // DB delete işlemi
+        int id = Integer.parseInt(courseId.getText().trim());
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText("Course with ID " + courseId.getText() + " deleted successfully");
-        alert.showAndWait();
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirm Delete");
+        confirm.setHeaderText("Are you sure you want to delete course with id " + id + "?");
 
-        clearCourse(event); // TextField’ları temizle
+        Optional<ButtonType> btn = confirm.showAndWait();
+
+        if (btn.isPresent() && btn.get() == ButtonType.OK) {
+            try {
+                int result = coursesCrudOperations.deleteCourseById(id);
+
+                if (result > 0) {
+                    showInfo("Course with ID " + id + " deleted successfully");
+                    clearCourse(event);
+                } else {
+                    showError("Course with ID " + id + " not found / could not be deleted");
+                }
+            } catch (RuntimeException ex) {
+                showError("Delete failed: " + ex.getMessage());
+            }
+        }
     }
 
     @FXML
@@ -141,31 +129,88 @@ public class CoursesController {
         Platform.exit();
     }
 
-    public void checkId(String id, ActionEvent event) {
-        if (id == null || id.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Id cannot be empty!");
-            alert.showAndWait();
+    private boolean checkId(String id, ActionEvent event) {
+        if (id == null || id.trim().isEmpty()) {
+            showError("Id cannot be empty!");
             clearCourse(event);
-            return;
+            return false;
         }
 
         try {
-            int value = Integer.parseInt(id);
+            int value = Integer.parseInt(id.trim());
             if (value <= 0) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Id must be a positive number!");
-                alert.showAndWait();
+                showError("Id must be a positive number!");
                 clearCourse(event);
+                return false;
             }
         } catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Id must be a valid number!");
-            alert.showAndWait();
+            showError("Id must be a valid number!");
             clearCourse(event);
+            return false;
         }
+
+        return true;
+    }
+
+    private boolean checkCourseFields() {
+
+        String title = courseTitle.getText();
+        String desc = courseDescription.getText();
+        String sem = courseSemester.getText();
+
+        if (title == null || title.trim().isEmpty()) {
+            showError("Course title cannot be empty!");
+            return false;
+        }
+
+        title = title.trim();
+
+        if (title.length() < 2) {
+            showError("Course title must be at least 2 characters!");
+            return false;
+        }
+
+        if (!title.matches("^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ\\s._-]+$")) {
+            showError("Course title contains invalid characters!");
+            return false;
+        }
+
+        if (desc == null || desc.trim().isEmpty()) {
+            showError("Course description cannot be empty!");
+            return false;
+        }
+
+        if (sem == null || sem.trim().isEmpty()) {
+            showError("Semester cannot be empty!");
+            return false;
+        }
+
+        sem = sem.trim();
+
+        if (sem.length() < 1) {
+            showError("Semester cannot be empty!");
+            return false;
+        }
+
+        if (!sem.matches("^[a-zA-Z0-9\\s]+$")) {
+            showError("Semester contains invalid characters!");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void showInfo(String header) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(header);
+        alert.showAndWait();
+    }
+
+    private void showError(String header) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR");
+        alert.setHeaderText(header);
+        alert.showAndWait();
     }
 }

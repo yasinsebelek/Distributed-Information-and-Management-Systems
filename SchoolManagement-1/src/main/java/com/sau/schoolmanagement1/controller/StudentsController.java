@@ -9,120 +9,105 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.Optional;
 
 public class StudentsController {
-    @FXML
-    private TextField studentId;
 
-    @FXML
-    private TextField studentName;
+    @FXML private TextField studentId;
+    @FXML private TextField studentName;
+    @FXML private TextField studentDepartment;
 
-    @FXML
-    private TextField studentDepartment;
+    @FXML private Button getStudent;
+    @FXML private Button updateStudent;
+    @FXML private Button saveStudent;
+    @FXML private Button deleteStudent;
+    @FXML private Button close;
+    @FXML private Button clearStudent;
 
-    @FXML
-    private Button getStudent;
-
-    @FXML
-    private Button updateStudent;
-
-    @FXML
-    private Button saveStudent;
-
-    @FXML
-    private Button deleteStudent;
-
-    @FXML
-    private Button close;
-
-    @FXML
-    private Button clearStudent;
-
+    private final StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
 
     @FXML
     void getStudent(ActionEvent event) {
-        checkId(studentId.getText(), event);
-        StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
-        int id = Integer.parseInt(studentId.getText());
-        Optional<Students> students = studentCrudOperations.getStudentsById(id);
+        if (!checkId(studentId.getText(), event)) return;
 
-        if (students.isPresent()) {
+        int id = Integer.parseInt(studentId.getText().trim());
+        Optional<Students> studentsOpt = studentCrudOperations.getStudentsById(id);
 
-            studentId.setText(Integer.toString(students.get().getId()));
-            studentName.setText(students.get().getName());
-            studentDepartment.setText(students.get().getDepartment());
+        if (studentsOpt.isPresent()) {
+            Students s = studentsOpt.get();
+            studentId.setText(Integer.toString(s.getId()));
+            studentName.setText(s.getName() == null ? "" : s.getName());
+            studentDepartment.setText(s.getDepartment() == null ? "" : s.getDepartment());
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("EROR");
-            alert.setHeaderText("Student with " + id + " not found");
-            alert.showAndWait();
+            showError("Student with id " + id + " not found");
         }
     }
 
     @FXML
     void updateStudent(ActionEvent event) {
-        checkId(studentId.getText(), event);
+        if (!checkId(studentId.getText(), event)) return;
+        if (!checkNameDepartment()) return;
+
         Students students = new Students();
-        students.setName(studentName.getText());
-        students.setDepartment(studentDepartment.getText());
-        students.setId(Integer.parseInt(studentId.getText()));
-        StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
+        students.setId(Integer.parseInt(studentId.getText().trim()));
+        students.setName(studentName.getText().trim());
+        students.setDepartment(studentDepartment.getText().trim());
+
         int res = studentCrudOperations.updateStudents(students);
         if (res > 0) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText("Student with id " + studentId.getText() + " id updated");
-            alert.showAndWait();
+            showInfo("Student with id " + studentId.getText().trim() + " updated");
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Error on update student!");
-            alert.showAndWait();
+            showError("Error on updating student!");
         }
-
     }
 
     @FXML
     void saveStudent(ActionEvent event) {
-        checkId(studentId.getText(), event);
+        if (!checkId(studentId.getText(), event)) return;
+        if (!checkNameDepartment()) return;
+
         Students students = new Students();
-        students.setName(studentName.getText());
-        students.setDepartment(studentDepartment.getText());
-        students.setId(Integer.parseInt(studentId.getText()));
-        StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
+        students.setId(Integer.parseInt(studentId.getText().trim()));
+        students.setName(studentName.getText().trim());
+        students.setDepartment(studentDepartment.getText().trim());
+
         int res = studentCrudOperations.insertStudents(students);
+
         if (res > 0) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText("Student with id " + studentId.getText() + " saved");
-            alert.showAndWait();
+            showInfo("Student with id " + studentId.getText().trim() + " saved");
         } else if (res == -1) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("There is another student with id: " + studentId.getText());
-            alert.showAndWait();
+            showError("There is another student with id: " + studentId.getText().trim());
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Error on saving student!");
-            alert.showAndWait();
+            showError("Error on saving student!");
         }
     }
 
     @FXML
     void deleteStudent(ActionEvent event) {
-        checkId(studentId.getText(), event);
-        StudentCrudOperations studentCrudOperations = new StudentCrudOperations();
-        int id = Integer.parseInt(studentId.getText());
-        int result = studentCrudOperations.deleteStudentsById(id);
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Success");
-        alert.setHeaderText("Students with id " + studentId.getText() + " deleted");
-        alert.showAndWait();
-        clearStudent(event);
+        if (!checkId(studentId.getText(), event)) return;
+
+        int id = Integer.parseInt(studentId.getText().trim());
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirm Delete");
+        confirm.setHeaderText("Are you sure you want to delete student with id " + id + "?");
+
+        Optional<javafx.scene.control.ButtonType> resultBtn = confirm.showAndWait();
+
+        if (resultBtn.isPresent() && resultBtn.get() == javafx.scene.control.ButtonType.OK) {
+            try {
+                int result = studentCrudOperations.deleteStudentsById(id);
+
+                if (result > 0) {
+                    showInfo("Student with id " + id + " deleted");
+                    clearStudent(event);
+                } else {
+                    showError("Student with id " + id + " not found / could not be deleted");
+                }
+            } catch (RuntimeException ex) {
+                showError("Delete failed: " + ex.getMessage());
+            }
+        }
     }
 
     @FXML
@@ -137,31 +122,82 @@ public class StudentsController {
         studentDepartment.setText("");
     }
 
-    public void checkId(String id, ActionEvent event) {
-        if (id == null || id.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Id cannot be empty!");
-            alert.showAndWait();
+    private boolean checkId(String id, ActionEvent event) {
+        if (id == null || id.trim().isEmpty()) {
+            showError("Id cannot be empty!");
             clearStudent(event);
-            return;
+            return false;
         }
 
         try {
-            int value = Integer.parseInt(id);
+            int value = Integer.parseInt(id.trim());
             if (value <= 0) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Id must be a positive number!");
-                alert.showAndWait();
+                showError("Id must be a positive number!");
                 clearStudent(event);
+                return false;
             }
         } catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Id must be a valid number!");
-            alert.showAndWait();
+            showError("Id must be a valid number!");
             clearStudent(event);
+            return false;
         }
+
+        return true;
+    }
+
+    private boolean checkNameDepartment() {
+
+        String name = studentName.getText();
+        String dept = studentDepartment.getText();
+
+        if (name == null || name.trim().isEmpty()) {
+            showError("Student name cannot be empty!");
+            return false;
+        }
+
+        name = name.trim();
+
+        if (name.length() < 2) {
+            showError("Student name must be at least 2 characters!");
+            return false;
+        }
+
+        if (!name.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ\\s]+$")) {
+            showError("Student name can contain only letters!");
+            return false;
+        }
+
+        if (dept == null || dept.trim().isEmpty()) {
+            showError("Department cannot be empty!");
+            return false;
+        }
+
+        dept = dept.trim();
+
+        if (dept.length() < 2) {
+            showError("Department must be at least 2 characters!");
+            return false;
+        }
+
+        if (!dept.matches("^[a-zA-Z0-9çÇğĞıİöÖşŞüÜ\\s]+$")) {
+            showError("Department can contain only letters and numbers!");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void showInfo(String header) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(header);
+        alert.showAndWait();
+    }
+
+    private void showError(String header) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("ERROR");
+        alert.setHeaderText(header);
+        alert.showAndWait();
     }
 }

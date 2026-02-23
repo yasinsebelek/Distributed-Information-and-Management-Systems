@@ -44,7 +44,7 @@ public class CoursesCrudOperations {
                     course.getDescription() + "', '" + course.getSemester() + "'";
 
             if (getCourseById(course.getId()).isPresent()) {
-                result = -1; // zaten var
+                result = -1;
             } else {
                 String query = "INSERT INTO courses (id, title, description, semester) VALUES (" + params + ");";
                 result = statement.executeUpdate(query);

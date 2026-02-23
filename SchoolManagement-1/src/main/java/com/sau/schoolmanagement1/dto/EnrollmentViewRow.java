@@ -2,23 +2,21 @@ package com.sau.schoolmanagement1.dto;
 
 import java.sql.Date;
 
-public class Enrollments {
+public class EnrollmentViewRow {
+
     private int studentId;
+    private String studentName;
+    private String studentDepartment;
+
     private int courseId;
+    private String courseTitle;
+    private String courseSemester;
+
     private Date classDate;
     private double tuition;
     private int attendance;
 
-    public Enrollments() {
-    }
-
-    public Enrollments(int studentId, int courseId, Date classDate, double tuition, int attendance) {
-        this.studentId = studentId;
-        this.courseId = courseId;
-        this.classDate = classDate;
-        this.tuition = tuition;
-        this.attendance = attendance;
-    }
+    public EnrollmentViewRow() {}
 
     public int getStudentId() {
         return studentId;
@@ -28,12 +26,44 @@ public class Enrollments {
         this.studentId = studentId;
     }
 
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public String getStudentDepartment() {
+        return studentDepartment;
+    }
+
+    public void setStudentDepartment(String studentDepartment) {
+        this.studentDepartment = studentDepartment;
+    }
+
     public int getCourseId() {
         return courseId;
     }
 
     public void setCourseId(int courseId) {
         this.courseId = courseId;
+    }
+
+    public String getCourseTitle() {
+        return courseTitle;
+    }
+
+    public void setCourseTitle(String courseTitle) {
+        this.courseTitle = courseTitle;
+    }
+
+    public String getCourseSemester() {
+        return courseSemester;
+    }
+
+    public void setCourseSemester(String courseSemester) {
+        this.courseSemester = courseSemester;
     }
 
     public Date getClassDate() {
@@ -59,6 +89,4 @@ public class Enrollments {
     public void setAttendance(int attendance) {
         this.attendance = attendance;
     }
-
-
 }

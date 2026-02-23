@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.sau.schoolmanagement1.controller.CourseListController"
+            prefHeight="360.0" prefWidth="700.0">
+
+    <children>
+        <Label layoutX="20" layoutY="18" text="COURSE ID:"/>
+        <TextField fx:id="courseId" layoutX="110" layoutY="14" prefWidth="150"/>
+
+        <Button layoutX="280" layoutY="14" text="LIST" onAction="#list"/>
+        <Button layoutX="345" layoutY="14" text="CLEAR" onAction="#clear"/>
+        <Button layoutX="430" layoutY="14" text="CLOSE" onAction="#close"/>
+
+        <TableView fx:id="table" layoutX="20" layoutY="55" prefWidth="660" prefHeight="285">
+            <columns>
+                <TableColumn fx:id="colStudentId" text="Student ID" prefWidth="90"/>
+                <TableColumn fx:id="colStudentName" text="Student Name" prefWidth="200"/>
+                <TableColumn fx:id="colStudentDept" text="Department" prefWidth="150"/>
+                <TableColumn fx:id="colClassDate" text="Class Date" prefWidth="100"/>
+                <TableColumn fx:id="colTuition" text="Tuition" prefWidth="90"/>
+                <TableColumn fx:id="colAttendance" text="Attendance" prefWidth="90"/>
+            </columns>
+        </TableView>
+    </children>
+</AnchorPane>
